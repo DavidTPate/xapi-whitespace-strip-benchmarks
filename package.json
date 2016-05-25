@@ -4,7 +4,7 @@
   "description": "Benchmarks for different ways of stripping whitespace for xAPI Statement comparison",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node index.js"
   },
   "repository": {
     "type": "git",

@@ -1,7 +1,9 @@
+'use strict';
 const Benchmark = require('benchmark');
+Benchmark.options.minSamples = 2000;
 const suite = new Benchmark.Suite;
 
-const payload = JSON.stringify({
+const incomingStatement = {
     "id": "6690e6c9-3ef0-4ed3-8b37-7f3964730bee",
     "actor": {
         "name": "Team PB",
@@ -132,19 +134,24 @@ const payload = JSON.stringify({
         },
         "objectType": "Activity"
     }
-});
+};
+const payloadMini = JSON.stringify(incomingStatement);
+const payloadPretty = JSON.stringify(incomingStatement, null, 4);
 
-// add tests
-suite.add('1xParse - 1xStringify - 1xReplace', function () {
+function firstTest(payload) {
     const payloadNoWhitespace = payload.replace(/\s(?=[^"]*"[^"]*")*[^"]*$/g, '');
-    const parsedPayload = JSON.parse(payload); // This would be parsed by middleware with every request.
+    const parsedPayload = JSON.parse(payload); // This would be parsed by middleware with every request anyways to eventually store the statement
     const deserializedThenReserializedPayload = JSON.stringify(parsedPayload);
-}).add('2xParse - 1xStringify - 2xReplace', function () {
+}
+
+function secondTest(payload) {
     const payloadNoWhitespace = payload.replace(/\s/g, '');
-    const parsedPayload = JSON.parse(payload); // This would be parsed by middleware with every request.
-    // Since we are removing all whitespace, we have to parse the no whitespace payload, since a key could have a space in it causing the Stringified payloads to be different
+    const parsedPayload = JSON.parse(payload); // This would be parsed by middleware with every request anyways to eventually store the statement
+    // Since we are removing all whitespace, we have to parse the no whitespace payloadMini, since a key could have a space in it causing the Stringified payloads to be different
     const deserializedThenReserializedPayload = JSON.stringify(JSON.parse(payloadNoWhitespace)).replace(/\s/g, '');
-}).add('State Machine', function () {
+}
+
+function stateMachine(payload) {
     const quote = 0x22;
     const slash = 0x2F;
     const space = 0x20;
@@ -188,11 +195,26 @@ suite.add('1xParse - 1xStringify - 1xReplace', function () {
                 break;
         }
     }
-    const parsedPayload = JSON.parse(payload); // This would be parsed by middleware with every request.
-    // Since we are removing all whitespace, we have to parse the no whitespace payload, since a key could have a space in it
+    const parsedPayload = JSON.parse(payload); // This would be parsed by middleware with every request anyways to eventually store the statement
+    // Since we are removing all whitespace, we have to parse the no whitespace payloadMini, since a key could have a space in it
     const deserializedThenReserializedPayload = JSON.stringify(parsedPayload);
+}
+
+// add tests
+suite.add('Mini Statement - 1xParse - 1xStringify - 1xReplace', function () {
+    firstTest(payloadMini);
+}).add('Pretty Statement - 1xParse - 1xStringify - 1xReplace', function () {
+    firstTest(payloadPretty);
+}).add('Mini Statement - 2xParse - 1xStringify - 2xReplace', function () {
+    secondTest(payloadMini);
+}).add('Pretty Statement - 2xParse - 1xStringify - 2xReplace', function () {
+    secondTest(payloadPretty);
+}).add('Mini Statement - State Machine', function () {
+    stateMachine(payloadMini);
+}).add('Pretty Statement - State Machine', function () {
+    stateMachine(payloadPretty);
 }).on('cycle', function (event) {
     console.log(String(event.target));
 }).on('complete', function () {
     console.log('Fastest is ' + this.filter('fastest').map('name'));
-}).run({ 'async': false });
+}).run({ async: false });
