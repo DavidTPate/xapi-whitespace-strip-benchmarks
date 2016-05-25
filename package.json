@@ -1,0 +1,22 @@
+{
+  "name": "xapi-whitespace-strip-benchmarks",
+  "version": "1.0.0",
+  "description": "Benchmarks for different ways of stripping whitespace for xAPI Statement comparison",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavidTPate/xapi-whitespace-strip-benchmarks.git"
+  },
+  "author": "David Pate <davidtpate@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DavidTPate/xapi-whitespace-strip-benchmarks/issues"
+  },
+  "homepage": "https://github.com/DavidTPate/xapi-whitespace-strip-benchmarks#readme",
+  "devDependencies": {
+    "benchmark": "^2.1.0"
+  }
+}
